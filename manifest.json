@@ -5,7 +5,8 @@
   "permissions": [
     "activeTab",
     "storage",
-    "sidePanel"
+    "sidePanel",
+    "tabs"
   ],
   "background": {
     "service_worker": "background.js"

@@ -3,28 +3,38 @@ function renderLinks(links) {
   const linkList = document.getElementById('linkList');
   const linkCount = document.getElementById('linkCount');
   
-  // Update count
-  linkCount.textContent = `${links.length} links collected`;
+  // Remove duplicates by creating a Map with href as key
+  const uniqueLinks = Array.from(
+    new Map(links.map(link => [link.href, link])).values()
+  );
+  
+  // Update count with unique links
+  linkCount.textContent = `${uniqueLinks.length} unique links collected`;
   
   // Clear existing content
   linkList.innerHTML = '';
   
-  if (links.length === 0) {
+  if (uniqueLinks.length === 0) {
     linkList.innerHTML = '<div class="empty-state">No links collected yet. Browse pages to collect links.</div>';
     return;
   }
   
-  // Sort links by timestamp (newest first)
-  links.sort((a, b) => b.timestamp - a.timestamp);
+  // Sort unique links by timestamp (newest first)
+  uniqueLinks.sort((a, b) => b.timestamp - a.timestamp);
   
   // Create link elements
-  links.forEach(link => {
+  uniqueLinks.forEach(link => {
     const linkItem = document.createElement('div');
     linkItem.className = 'link-item' + (link.isAjax ? ' ajax' : '');
     
     const anchor = document.createElement('a');
     anchor.href = link.href;
-    anchor.target = '_blank';
+    anchor.addEventListener('click', (e) => {
+      e.preventDefault();
+      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        chrome.tabs.update(tabs[0].id, {url: link.href});
+      });
+    });
     anchor.textContent = link.href;
     
     const linkText = document.createElement('div');
