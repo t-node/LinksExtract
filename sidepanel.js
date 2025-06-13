@@ -61,7 +61,7 @@ document.getElementById('clearBtn').addEventListener('click', async () => {
   }
 });
 
-// Listen for storage changes
+// Listen for storage changes here
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'local' && changes.allCollectedLinks) {
     const newLinks = changes.allCollectedLinks.newValue || [];
